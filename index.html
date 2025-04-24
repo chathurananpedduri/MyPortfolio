@@ -22,6 +22,8 @@
 
       body {
         background-color: var(--black);
+        color: var(--light-text);
+        overflow-x: hidden;
       }
 
       .container {
@@ -610,6 +612,37 @@
         color: #a0a0a0;
       }
 
+      /* Notification styling */
+      .notification {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        max-width: 350px;
+      }
+
+      .notification.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .notification.success {
+        background-color: rgba(0, 243, 255, 0.9);
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+      }
+
+      .notification.error {
+        background-color: rgba(255, 71, 87, 0.9);
+        box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+      }
+
       /* Interactive elements and animations */
       .glow-effect {
         position: absolute;
@@ -1182,7 +1215,7 @@
           </div>
 
           <div class="contact-form fade-in-up delay-1">
-            <form>
+            <form id="contactForm">
               <div class="form-group">
                 <label for="name">Name</label>
                 <input type="text" id="name" class="form-control" required />
@@ -1208,6 +1241,10 @@
                 ></textarea>
               </div>
 
+              <p style="margin-bottom: 15px; font-size: 0.9rem;">
+                By submitting this form, you agree to our <a href="privacy-policy.html" style="color: var(--neon-blue);">Privacy Policy</a>.
+              </p>
+
               <button type="submit" class="submit-btn">Send Message</button>
             </form>
           </div>
@@ -1219,23 +1256,24 @@
     <footer>
       <div class="container">
         <div class="social-links">
-          <a href="#" class="social-icon">
+          <a href="https://github.com/chathurananpedduri" target="_blank" class="social-icon">
             <i class="fab fa-github"></i>
           </a>
-          <a href="#" class="social-icon">
+          <a href="https://www.linkedin.com/in/chathuranan/" target="_blank" class="social-icon">
             <i class="fab fa-linkedin-in"></i>
           </a>
           <a href="#" class="social-icon">
             <i class="fab fa-twitter"></i>
           </a>
-          <a href="#" class="social-icon">
+          <a href="" class="social-icon">
             <i class="fab fa-instagram"></i>
           </a>
         </div>
-        <p class="copyright">© 2025 Chathuranan. All rights reserved.</p>
+        <p class="copyright">© 2023 Chathuranan. All rights reserved.</p>
       </div>
     </footer>
 
+    <script src="email.js"></script>
     <script>
       // Initialize skill progress bars animation
       document.addEventListener("DOMContentLoaded", function () {
