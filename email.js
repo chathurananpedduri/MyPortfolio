@@ -1,7 +1,7 @@
 // EmailJS configuration
 (function() {
-    // Initialize EmailJS with your public key
-    emailjs.init("cVGrxet5psjFgYsYi"); // Replace with your actual public key
+    // Your public key is already defined here
+    const PUBLIC_KEY = "cVGrxet5psjFgYsYi";
 })();
 
 // Form submission handler
@@ -15,30 +15,55 @@ document.getElementById('contactForm').addEventListener('submit', function(event
     submitBtn.disabled = true;
 
     // Prepare template parameters
+    // These parameters must match exactly with your EmailJS template variables
+    // In your EmailJS template, use these exact variable names:
+    // {{from_name}} - To display the sender's name
+    // {{from_email}} - To display the sender's email
+    // {{subject}} - To display the email subject
+    // {{message}} - To display the email message
     const templateParams = {
-        from_name: document.getElementById('name').value,
-        from_email: document.getElementById('email').value,
-        subject: document.getElementById('subject').value,
-        message: document.getElementById('message').value
+        from_name: document.getElementById('name').value.toString(),    // The sender's name
+        from_email: document.getElementById('email').value.toString(),  // The sender's email address
+        subject: document.getElementById('subject').value.toString(),   // The subject line of the email
+        message: document.getElementById('message').value.toString()    // The main message content
     };
 
-    // Send email using EmailJS
-    emailjs.send('service_thvdnkj', 'template_2ryvknl', templateParams)
-        .then(function(response) {
-            // Show success notification
-            showNotification('Message sent successfully!', 'success');
-            
-            // Reset form
-            document.getElementById('contactForm').reset();
-        }, function(error) {
-            // Show error notification
-            showNotification('Failed to send message. Please try again.', 'error');
-        })
-        .finally(function() {
-            // Reset button state
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-        });
+    // Prepare the request data according to EmailJS API specification
+    const data = {
+        service_id: 'service_thvdnkj',
+        template_id: 'template_u1n3avj',
+        user_id: 'cVGrxet5psjFgYsYi',  // Your public key
+        template_params: templateParams
+    };
+
+    // Send email using EmailJS REST API
+    fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to send email');
+        }
+        // Show success notification
+        showNotification('Message sent successfully!', 'success');
+        
+        // Reset form
+        document.getElementById('contactForm').reset();
+    })
+    .catch(error => {
+        // Show error notification
+        showNotification('Failed to send message. Please try again.', 'error');
+        console.error('Email error:', error);
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+    });
 });
 
 // Notification function
