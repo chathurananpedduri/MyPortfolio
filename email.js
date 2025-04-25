@@ -1,7 +1,6 @@
 // EmailJS configuration
 (function() {
-    // Your public key is already defined here
-    const PUBLIC_KEY = "cVGrxet5psjFgYsYi";
+    emailjs.init("cVGrxet5psjFgYsYi");
 })();
 
 // Form submission handler
@@ -14,56 +13,48 @@ document.getElementById('contactForm').addEventListener('submit', function(event
     submitBtn.innerHTML = 'Sending...';
     submitBtn.disabled = true;
 
-    // Prepare template parameters
-    // These parameters must match exactly with your EmailJS template variables
-    // In your EmailJS template, use these exact variable names:
-    // {{from_name}} - To display the sender's name
-    // {{from_email}} - To display the sender's email
-    // {{subject}} - To display the email subject
-    // {{message}} - To display the email message
-    const templateParams = {
-        from_name: document.getElementById('name').value.toString(),    // The sender's name
-        from_email: document.getElementById('email').value.toString(),  // The sender's email address
-        subject: document.getElementById('subject').value.toString(),   // The subject line of the email
-        message: document.getElementById('message').value.toString()    // The main message content
-    };
+    // Get form values
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const subject = document.getElementById('subject').value.trim();
+    const message = document.getElementById('message').value.trim();
 
-    // Prepare the request data according to EmailJS API specification
-    const data = {
-        service_id: 'service_thvdnkj',
-        template_id: 'template_u1n3avj',
-        user_id: 'cVGrxet5psjFgYsYi',  // Your public key
-        template_params: templateParams
-    };
-
-    // Send email using EmailJS REST API
-    fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to send email');
-        }
-        // Show success notification
-        showNotification('Message sent successfully!', 'success');
-        
-        // Reset form
-        document.getElementById('contactForm').reset();
-    })
-    .catch(error => {
-        // Show error notification
-        showNotification('Failed to send message. Please try again.', 'error');
-        console.error('Email error:', error);
-    })
-    .finally(() => {
-        // Reset button state
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+    // Debug log
+    console.log('Form Values:', {
+        name: name,
+        email: email,
+        subject: subject,
+        message: message
     });
+
+    // Prepare template parameters using standard EmailJS variables
+    const templateParams = {
+        name: name,           // Standard name parameter
+        email: email,         // Standard email parameter
+        subject: subject,     // Standard subject parameter
+        message: message,     // Standard message parameter
+        reply_to: email,      // For reply-to functionality
+        from_name: name,      // Alternative name parameter
+        to_name: 'Chathuranan'
+    };
+
+    // Debug log template params
+    console.log('Template Parameters:', templateParams);
+
+    // Using emailjs.send() with detailed error handling
+    emailjs.send('service_thvdnkj', 'template_u1n3avj', templateParams)
+        .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            showNotification('Message sent successfully!', 'success');
+            document.getElementById('contactForm').reset();
+        }, function(error) {
+            console.error('FAILED...', error);
+            showNotification('Failed to send message. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+        });
 });
 
 // Notification function
