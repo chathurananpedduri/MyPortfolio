@@ -14,7 +14,7 @@ document.getElementById('contactForm').addEventListener('submit', function(event
     submitBtn.disabled = true;
 
     // Get form values
-    const name = document.getElementById('name').value.trim();
+    const name = document.getElementById('name').value.trim(); 
     const email = document.getElementById('email').value.trim();
     const subject = document.getElementById('subject').value.trim();
     const message = document.getElementById('message').value.trim();
