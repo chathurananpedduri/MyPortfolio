@@ -81,4 +81,7 @@ function showNotification(message, type) {
 fetch('http://localhost:3000/api/health')
     .then(response => response.json())
     .then(data => console.log('API health check:', data))
-    .catch(error => console.error('API health check failed:', error)); 
+    .catch(error => console.error('API health check failed:', error));
+
+// Improved script for maximum compatibility
+audio.volume = 1; 

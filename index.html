@@ -872,6 +872,10 @@
     <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
   </head>
   <body>
+    <audio id="background-music" src="assets/Coming Soon!! Sonant - Subtle Swarm LP  #music #ambient #ambientmusic #backgroundmusic.mp3" autoplay loop hidden muted></audio>
+    <button id="mute-btn" aria-label="Toggle music" style="position:fixed;bottom:30px;right:30px;z-index:2000;background:rgba(0,30,46,0.8);color:#00f3ff;border:none;border-radius:50%;width:48px;height:48px;box-shadow:0 0 10px #00f3ff88;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;">
+      <span id="mute-icon">🔇</span>
+    </button>
     <!-- Header -->
     <header>
       <div class="container">
@@ -1377,6 +1381,38 @@
           glowEffect.style.top = e.clientY - 75 + "px"
         })
       })
+
+      const audio = document.getElementById('background-music');
+      const muteBtn = document.getElementById('mute-btn');
+      const muteIcon = document.getElementById('mute-icon');
+      let userInteracted = false;
+
+      function toggleMute() {
+        if (audio.muted) {
+          audio.muted = false;
+          audio.play();
+          muteIcon.textContent = '🔊';
+        } else {
+          audio.muted = true;
+          muteIcon.textContent = '🔇';
+        }
+      }
+
+      muteBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleMute();
+      });
+
+      // Unmute and play on first user interaction anywhere
+      function enableAudioOnce() {
+        if (!userInteracted) {
+          audio.muted = false;
+          audio.play();
+          muteIcon.textContent = '🔊';
+          userInteracted = true;
+        }
+      }
+      document.body.addEventListener('click', enableAudioOnce, { once: true });
     </script>
   </body>
 </html>
