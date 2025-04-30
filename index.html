@@ -866,16 +866,142 @@
       html {
         scroll-behavior: smooth;
       }
+
+      /* Chatbot Styles */
+      .chat-widget {
+        position: fixed;
+        bottom: 100px;
+        right: 30px;
+        width: 350px;
+        height: 450px;
+        background: rgba(0, 30, 46, 0.95);
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        display: flex;
+        flex-direction: column;
+        z-index: 1000;
+        overflow: hidden;
+        transform: translateY(120%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .chat-widget.open {
+        transform: translateY(0);
+      }
+
+      .chat-header {
+        padding: 15px;
+        background: rgba(0, 243, 255, 0.1);
+        color: #00f3ff;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .chat-close {
+        background: none;
+        border: none;
+        color: #00f3ff;
+        cursor: pointer;
+        font-size: 20px;
+      }
+
+      .chat-messages {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .chat-message {
+        max-width: 80%;
+        padding: 10px 15px;
+        border-radius: 12px;
+        margin: 5px 0;
+        word-wrap: break-word;
+      }
+
+      .user-message {
+        background: rgba(0, 243, 255, 0.1);
+        color: #fff;
+        align-self: flex-end;
+      }
+
+      .bot-message {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        align-self: flex-start;
+      }
+
+      .chat-input-container {
+        padding: 15px;
+        background: rgba(0, 243, 255, 0.05);
+        display: flex;
+        gap: 10px;
+      }
+
+      .chat-input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(0, 30, 46, 0.8);
+        color: #fff;
+        outline: none;
+      }
+
+      .chat-input:focus {
+        border-color: #00f3ff;
+      }
+
+      .chat-send {
+        padding: 10px 20px;
+        background: #00f3ff;
+        color: #001e2e;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+      }
+
+      .chat-send:hover {
+        background: #00d4ff;
+      }
+
+      .chat-toggle {
+        position: fixed;
+        right: 40px;
+        bottom: 30px;
+        width: 60px;
+        height: 60px;
+        background: #00f3ff;
+        border: none;
+        border-radius: 50%;
+        color: #001e2e;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .chat-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+      }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <!-- Add EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.emailjs.com/sdk/2.3.2/email.min.js"></script>
   </head>
   <body>
-    <audio id="background-music" src="assets/Coming Soon!! Sonant - Subtle Swarm LP  #music #ambient #ambientmusic #backgroundmusic.mp3" autoplay loop hidden muted></audio>
-    <button id="mute-btn" aria-label="Toggle music" style="position:fixed;bottom:30px;right:30px;z-index:2000;background:rgba(0,30,46,0.8);color:#00f3ff;border:none;border-radius:50%;width:48px;height:48px;box-shadow:0 0 10px #00f3ff88;cursor:pointer;font-size:22px;display:flex;align-items:center;justify-content:center;">
-      <span id="mute-icon">🔇</span>
-    </button>
     <!-- Header -->
     <header>
       <div class="container">
@@ -1381,38 +1507,173 @@
           glowEffect.style.top = e.clientY - 75 + "px"
         })
       })
+    </script>
+    <!-- Chat Widget -->
+    <button class="chat-toggle" aria-label="Toggle chat">💬</button>
+    <div class="chat-widget">
+      <div class="chat-header">
+        <span>Chat with AI Assistant</span>
+        <button class="chat-close" aria-label="Close chat">×</button>
+      </div>
+      <div class="chat-messages">
+        <div class="chat-message bot-message">
+          Hi! I'm your AI assistant. How can I help you today?
+        </div>
+      </div>
+      <div class="chat-input-container">
+        <input type="text" class="chat-input" placeholder="Type your message..." aria-label="Chat input">
+        <button class="chat-send">Send</button>
+      </div>
+    </div>
 
-      const audio = document.getElementById('background-music');
-      const muteBtn = document.getElementById('mute-btn');
-      const muteIcon = document.getElementById('mute-icon');
-      let userInteracted = false;
+    <!-- Add chatbot script before closing body tag -->
+    <script>
+      // Chatbot functionality
+      document.addEventListener('DOMContentLoaded', function() {
+        const chatWidget = document.querySelector('.chat-widget');
+        const chatToggle = document.querySelector('.chat-toggle');
+        const chatClose = document.querySelector('.chat-close');
+        const chatInput = document.querySelector('.chat-input');
+        const chatSend = document.querySelector('.chat-send');
+        const chatMessages = document.querySelector('.chat-messages');
 
-      function toggleMute() {
-        if (audio.muted) {
-          audio.muted = false;
-          audio.play();
-          muteIcon.textContent = '🔊';
-        } else {
-          audio.muted = true;
-          muteIcon.textContent = '🔇';
+        // Toggle chat widget
+        chatToggle.addEventListener('click', () => {
+          chatWidget.classList.toggle('open');
+          if (chatWidget.classList.contains('open')) {
+            chatInput.focus();
+          }
+        });
+
+        // Close chat widget
+        chatClose.addEventListener('click', () => {
+          chatWidget.classList.remove('open');
+        });
+
+        // Send message function
+        function sendMessage() {
+          const message = chatInput.value.trim();
+          if (message) {
+            // Add user message
+            addMessage(message, 'user');
+            chatInput.value = '';
+
+            // Simulate AI response
+            setTimeout(() => {
+              const response = generateResponse(message);
+              addMessage(response, 'bot');
+            }, 1000);
+          }
         }
-      }
 
-      muteBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleMute();
+        // Add message to chat
+        function addMessage(text, sender) {
+          const messageDiv = document.createElement('div');
+          messageDiv.className = `chat-message ${sender}-message`;
+          messageDiv.textContent = text;
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Generate AI response
+        function generateResponse(message) {
+          const responses = {
+            // Basic greetings
+            'hello': 'Hi! I\'m Chathuranan\'s AI assistant. I can tell you about his skills, projects, education, and experience. What would you like to know?',
+            'hi': 'Hello! I can help you learn more about Chathuranan. Feel free to ask about his technical skills, projects, or background!',
+            'hey': 'Hey there! I\'m here to tell you all about Chathuranan. What would you like to know?',
+
+            // Skills and expertise
+            'skills': 'Chathuranan is a Full Stack Java Developer with expertise in:\n\n• Programming: Java, SQL, PL/SQL, Python\n• Frameworks: Spring Boot 3\n• Databases: Oracle Database\n• Cloud: AWS (S3, RDS, EC2, ECR)\n• Other: Data Warehousing, Docker\n\nWhat specific skill would you like to know more about?',
+            'java': 'Chathuranan has strong expertise in Java development with a 90% proficiency level. He uses Java primarily with Spring Boot 3 for building robust backend services and RESTful APIs. He\'s also certified as an Oracle Certified Professional: Java SE 11 Developer.',
+            'spring': 'Chathuranan has extensive experience with Spring Boot 3, using it to develop RESTful APIs and microservices. He\'s particularly skilled in Spring Boot features like dependency injection, security, and data JPA.',
+            'sql': 'Chathuranan is highly proficient in SQL and PL/SQL (85% proficiency), with expertise in:\n• Complex query optimization\n• Stored procedures and triggers\n• Database design and normalization\n• Performance tuning\nHe\'s also an Oracle Database SQL Certified Associate.',
+            'aws': 'Chathuranan has experience with various AWS services including:\n• S3 for storage\n• RDS for managed databases\n• EC2 for compute instances\n• ECR for container registry\nHe\'s an AWS Certified Solutions Architect - Associate.',
+
+            // Projects
+            'projects': 'Chathuranan has worked on several significant projects:\n\n1. Clothing E-Commerce Website\n2. Retail Business Management System\n3. Library Management System\n\nWhich project would you like to know more about?',
+            'ecommerce': 'The Clothing E-Commerce Website is a full-stack project featuring:\n• Spring Boot backend with RESTful APIs\n• User authentication and authorization\n• Product catalog and shopping cart\n• Payment gateway integration\n• Responsive frontend with HTML/CSS/JavaScript\n• MySQL database integration\n\nYou can view the code at: https://github.com/chathurananpedduri/E-Commerce.git',
+            'retail': 'The Retail Business Management System is a database-focused project featuring:\n• PL/SQL stored procedures and triggers\n• Inventory and sales management\n• Customer and vendor data handling\n• Real-time reporting system\n• Optimized query performance\n\nYou can view the code at: https://github.com/chathurananpedduri/EmployeeManagementSystem.git',
+            'library': 'The Library Management System is a database project featuring:\n• Complex database schema design\n• Book and video rental tracking\n• Automated fine calculations\n• Status updates and rental history\n• Data integrity constraints',
+
+            // Education and Certifications
+            'education': 'Chathuranan\'s educational background includes:\n\n• Bachelor\'s in Mechanical Engineering (2020-2023)\n  Vaagdevi College of Engineering\n  Graduated with distinction\n\n• Higher Secondary Education (2016-2020)\n  Government Polytechnic, Parkal\n  Ranked in top 10%',
+            'certifications': 'Chathuranan holds several professional certifications:\n\n1. AWS Certified Solutions Architect - Associate\n2. Oracle Database SQL Certified Associate\n3. Oracle Certified Professional: Java SE 11 Developer',
+
+            // Contact Information
+            'contact': 'You can reach Chathuranan through:\n\n• Email: peddurichathuranan067@gmail.com\n• Phone: +91 7993505267\n• Location: Hyderabad, Telangana, India\n• LinkedIn: linkedin.com/in/chathuranan\n• GitHub: github.com/chathurananpedduri',
+
+            // Experience and Background
+            'experience': 'Chathuranan is a Full Stack Java Developer specializing in:\n\n• Spring Boot development\n• Database design and optimization\n• AWS cloud services\n• Full-stack web applications\n\nHe has demonstrated his skills through various projects in e-commerce and business management systems.',
+
+            // Default response
+            'default': 'I can tell you about Chathuranan\'s:\n• Technical skills\n• Project experience\n• Education and certifications\n• Contact information\n\nWhat would you like to know more about?'
+          };
+
+          // Process the message
+          message = message.toLowerCase();
+          
+          // Check for specific keywords in the message
+          if (message.includes('skill') || message.includes('can') || message.includes('know')) {
+            return responses['skills'];
+          }
+          if (message.includes('project') || message.includes('work') || message.includes('portfolio')) {
+            return responses['projects'];
+          }
+          if (message.includes('education') || message.includes('study') || message.includes('degree')) {
+            return responses['education'];
+          }
+          if (message.includes('contact') || message.includes('reach') || message.includes('email')) {
+            return responses['contact'];
+          }
+          if (message.includes('certification') || message.includes('certified')) {
+            return responses['certifications'];
+          }
+          if (message.includes('experience') || message.includes('background')) {
+            return responses['experience'];
+          }
+          if (message.includes('ecommerce') || message.includes('shop')) {
+            return responses['ecommerce'];
+          }
+          if (message.includes('retail') || message.includes('business')) {
+            return responses['retail'];
+          }
+          if (message.includes('library')) {
+            return responses['library'];
+          }
+          if (message.includes('java')) {
+            return responses['java'];
+          }
+          if (message.includes('spring')) {
+            return responses['spring'];
+          }
+          if (message.includes('sql') || message.includes('database')) {
+            return responses['sql'];
+          }
+          if (message.includes('aws') || message.includes('cloud')) {
+            return responses['aws'];
+          }
+
+          // Check for basic greetings
+          for (let key of ['hello', 'hi', 'hey']) {
+            if (message.includes(key)) {
+              return responses[key];
+            }
+          }
+
+          return responses.default;
+        }
+
+        // Send button click
+        chatSend.addEventListener('click', sendMessage);
+
+        // Enter key press
+        chatInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            sendMessage();
+          }
+        });
       });
-
-      // Unmute and play on first user interaction anywhere
-      function enableAudioOnce() {
-        if (!userInteracted) {
-          audio.muted = false;
-          audio.play();
-          muteIcon.textContent = '🔊';
-          userInteracted = true;
-        }
-      }
-      document.body.addEventListener('click', enableAudioOnce, { once: true });
     </script>
   </body>
 </html>
